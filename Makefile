@@ -1,21 +1,28 @@
+ifeq ($(P56xxLIBS),)
+$(error P56xxLIBS environment variable is missing, source <path>/p56xxlib/setup.sh)
+endif
+
 ROOTCFLAGS = $(shell root-config --cflags)
 ROOTLIBS   = $(shell root-config --libs)
 ROOTGLIBS  = $(shell root-config --glibs)
-CXXFLAGS  += $(ROOTCFLAGS)
-LIBS       = $(ROOTLIBS) 
-GLIBS      = $(ROOTGLIBS)
-GXX	   = /usr/bin/g++ -Wall -O3
+ROOTFLAGS   = $(ROOTCFLAGS) $(ROOTLIBS) $(ROOTGLIBS) 
+CXXFLAGS  += $(ROOTCFLAGS) -I$(P56xxLIBS)/inc -Wall -O3
+LDFLAGS    = $(ROOTLIBS) $(ROOTGLIBS) -L$(P56xxLIBS)/lib -lP56xx
+GXX	   = g++ $(CXXFLAGS)
 
-all: RKnTest RKnDemo
+SRCS = $(wildcard *.cpp)
+OBJ = $(SRC:.cpp=.o)
+EXES = $(SRCS:%.cpp=%)
+dep = $(OBJ:.o=.d)  # one dependency file for each source
 
-RKnTest:  RKnTest.cpp RKn.o
-	$(GXX) -o RKnTest RKnTest.cpp $(ROOTCFLAGS) $(LIBS) $(ROOTGLIBS) RKn.o
+all: $(EXES)
 
-RKnDemo:  RKnDemo.cpp RKn.o
-	$(GXX) -o RKnDemo RKnDemo.cpp $(ROOTCFLAGS) $(LIBS) $(ROOTGLIBS) RKn.o
-
-RKn.o: RKn.cpp RKn.hpp
-	$(GXX) -c -o RKn.o RKn.cpp $(ROOTCFLAGS) 
+$(EXES): $(SRCS)
+	$(GXX) $(CXXFLAGS) -MMD -c $@.cpp
+	$(GXX) $@.cpp -o$@ $(LDFLAGS)
 
 clean:
-	rm -f RKnDemo RKnTest RKn.o *~
+	rm -f *.o *.so *.d *~ $(EXES)
+
+cleanall: clean
+	rm -f $(dep)

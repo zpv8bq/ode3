@@ -1,4 +1,9 @@
-# example for making plots from our differential equation solver
+#!/usr/bin/env python
+## @package RKnplotDemo
+# Example for making plots from our differential equation solver.
+#
+# Requires that RKnDemo has been run first
+
 import ROOT as r      # needed to load ROOT libraries
 #import numpy as np    # only needed to use numpy arrays, see example below
 import sys

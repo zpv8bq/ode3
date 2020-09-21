@@ -1,3 +1,13 @@
+/**
+ * @file 
+ * @brief Test of Runge-Kutta solvers. 
+ * @author Bob Hirosky
+ * @date 31 Dec 2019 
+ * 
+ * Compares using an Rk4 solver for a single ODE based on the example in 
+ * our last class to the series solver (here the series is just the one ODE). 
+ */
+
 #include "RKn.hpp"
 #include "TROOT.h"
 #include "TApplication.h"
@@ -11,29 +21,29 @@
 
 using namespace std;
 
-// a single 1st order ODE, written w/ old and new interfaces  
+/// A single 1st order ODE  
 double fun(double x, double y){
   return (3*x*x+4*x+2)/2/(y-1);     // y0 = -1
 }                                   // solution: 1-sqrt(x^3 + 2*x^2 +2*x+4)
 
-// same function, but use interface that supports a coupled array of ODEs
+/// Same function, using interface that supports a coupled array of ODEs
 double fun_vy(double x, const vector<double> &y){
   return (3*x*x+4*x+2)/2/(y[0]-1);   // y0[0] = -1
 }                                    // solution: 1-sqrt(x^3 + 2*x^2 + 2*x+ 4)
 
  
-// functions to describe simple projectile motion
-
+/// This code performs a simple comparision of the single equation solver and
+/// the series of equations solver.
 int main(int argc, char **argv){
   TApplication theApp("App", &argc, argv); // init ROOT App for displays
 
-  // ******************************************************************************
+  // ***************************************************************************
   // ** this block is useful for supporting both high and std resolution screens **
   UInt_t dh = gClient->GetDisplayHeight()/2;   // fix plot to 1/2 screen height  
   //UInt_t dw = gClient->GetDisplayWidth();
   UInt_t dw = 1.1*dh;
   TCanvas *c1 = new TCanvas("c1","ODE solutions",dw,dh);
-  // ******************************************************************************
+  // ***************************************************************************
   
 
   // *** test 1: Compare RK4Solve method with RK4SolveN
